@@ -12,6 +12,26 @@ std::string Block::GetHash(){
   return mHash[0];
 }
 
+
+inline std::vector<std::string> Block::CalculateHash() const {
+  json b;
+
+  b["index"] = mIndex;
+  b["timestamp"] = mTime;
+  b["transactions"][0]["sender"] = mSender;
+  b["transactions"][0]["recipient"] = mRecipient;
+  b["transactions"][0]["amount"] = mAmount;
+  b["proof"] = mData;
+  b["previous_hash"] = mPrevHash;
+  b["nonce"] = mNonce;
+
+  std::vector<std::string> result(2);
+  result[0] = sha256(b.dump());
+  result[1] = b.dump();
+
+  return result;
+}
+
 Block Block::Mine(uint64_t nDifficulty, std::string WalletAddress){
   mSender = "SYSTEM";
   mRecipient = WalletAddress;
@@ -44,25 +64,6 @@ Block Block::Mine(uint64_t nDifficulty, std::string WalletAddress){
   result.mAmount = mAmount;
   result.mTime = mTime;
   result.mHash = mHash;
-  return result;
-}
-
-inline std::vector<std::string> Block::CalculateHash() const {
-  json b;
-
-  b["index"] = mIndex;
-  b["timestamp"] = mTime;
-  b["transactions"][0]["sender"] = mSender;
-  b["transactions"][0]["recipient"] = mRecipient;
-  b["transactions"][0]["amount"] = mAmount;
-  b["proof"] = mData;
-  b["previous_hash"] = mPrevHash;
-  b["nonce"] = mNonce;
-
-  std::vector<std::string> result(2);
-  result[0] = sha256(b.dump());
-  result[1] = b.dump();
-
   return result;
 }
 
